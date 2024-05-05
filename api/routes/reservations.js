@@ -76,6 +76,10 @@ router.get("/:reservationId", checkAuth, (req, res, next) => {
     });
 });
 
+
+//Get reservation by user id
+
+
 //TODO: update reservation (needed for status maybe)
 
 module.exports = router;

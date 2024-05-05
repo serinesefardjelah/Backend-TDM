@@ -7,11 +7,15 @@ const reservationSchema = mongoose.Schema({
     ref: "Parking",
     required: true,
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   date: { type: Date, required: true },
   time: { type: String, required: true },
   duration: { type: Number, required: true },
   vehicle: { type: String, required: true },
-  user: { type: String, required: true },
 });
 
 module.exports = mongoose.model("Reservation", reservationSchema);
