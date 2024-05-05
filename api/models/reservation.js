@@ -12,10 +12,9 @@ const reservationSchema = mongoose.Schema({
     ref: "User",
     required: true,
   },
-  date: { type: Date, required: true },
-  time: { type: String, required: true },
-  duration: { type: Number, required: true },
-  vehicle: { type: String, required: true },
+  entryTime: { type: Date, required: true },
+  exitTime: { type: Date, required: true },
+  place: { type: Number, required: true },
 });
 
 module.exports = mongoose.model("Reservation", reservationSchema);

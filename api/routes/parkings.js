@@ -17,7 +17,7 @@ const Parking = require("../models/parking");
 
 router.get("/", (req, res, next) => {
   Parking.find()
-    .select("name price location capacity available reserved image description")
+    // .select("name price capacity image description longitude latitude city")
     .exec()
     .then((docs) => {
       const response = {
@@ -26,12 +26,13 @@ router.get("/", (req, res, next) => {
           return {
             name: doc.name,
             price: doc.price,
-            location: doc.location,
             capacity: doc.capacity,
-            available: doc.available,
-            reserved: doc.reserved,
             image: doc.image,
             description: doc.description,
+            longitude: doc.longitude,
+            latitude: doc.latitude,
+            city: doc.city,
+
             _id: doc._id,
             request: {
               type: "GET",
@@ -51,22 +52,35 @@ router.get("/", (req, res, next) => {
     });
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", (req, res, next) => {
   console.log(req.file);
-  const img = 
- ` await cloudinary.uploader.upload("./uploads/" , {
-    folder: "parking-app",
-  });`
+  //   const img =
+  //  ` await cloudinary.uploader.upload("./uploads/" , {
+  //     folder: "parking-app",
+  //   });`
+  const {
+    name,
+    price,
+    capacity,
+    reserved,
+    image,
+    city,
+    latitude,
+    longitude,
+    description,
+  } = req.body;
+
   const parking = new Parking({
     _id: new mongoose.Types.ObjectId(),
-    name: req.body.name,
-    price: req.body.price,
-    location: req.body.location,
-    capacity: req.body.capacity,
-    available: req.body.available,
-    reserved: req.body.reserved,
-    image: img.secure_url,
-    description: req.body.description,
+    name,
+    price,
+    capacity,
+    reserved,
+    image,
+    city,
+    latitude,
+    longitude,
+    description,
   });
   parking
     .save()

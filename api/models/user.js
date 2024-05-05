@@ -10,6 +10,10 @@ const userSchema = mongoose.Schema({
     match: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
   },
   password: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  phone: { type: String, required: true },
+  image: { type: String, required: true },
 });
 
 module.exports = mongoose.model("User", userSchema);
