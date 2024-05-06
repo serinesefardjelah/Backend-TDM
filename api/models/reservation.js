@@ -14,7 +14,7 @@ const reservationSchema = mongoose.Schema({
   },
   entryTime: { type: Date, required: true },
   exitTime: { type: Date, required: true },
-  place: { type: Number, required: true },
+  place: { type: Number },
 });
 
 module.exports = mongoose.model("Reservation", reservationSchema);

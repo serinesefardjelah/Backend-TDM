@@ -9,7 +9,14 @@ const parkingSchema = mongoose.Schema({
   capacity: { type: Number, required: true },
   price: { type: Number, required: true },
   image: { type: String, required: true },
-  description: { type: String, required: true }
+  description: { type: String, required: true },
+  availablePlaces: {
+    type: Number,
+    required: true,
+    default: function () {
+      return this.capacity;
+    },
+  },
 });
 
 module.exports = mongoose.model("Parking", parkingSchema);

@@ -4,48 +4,73 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const upload = require("../middleware/multer");
+const cloudinary = require("../utils/cloudinary");
+const defaultUserImageUrl =
+  "https://res.cloudinary.com/dplvqzogl/image/upload/v1715002629/parking-app/duhp6ay0nxztbzlqqfm9.jpg";
 
 //signup
-router.post("/signup", (req, res, next) => {
-  User.find({ email: req.body.email })
-    .exec()
-    .then((user) => {
-      if (user.length >= 1) {
-        return res.status(409).json({
-          message: "Mail exists",
-        });
-      } else {
-        bcrypt.hash(req.body.password, 10, (err, hash) => {
-          if (err) {
-            return res.status(500).json({
-              error: err,
-            });
-          } else {
-            const user = new User({
-              _id: new mongoose.Types.ObjectId(),
-              email: req.body.email,
-              password: hash,
-            });
-            user
-              .save()
-              .then((result) => {
-                console.log(result);
-                res.status(200).json({
-                  message: "User created",
-                });
-              })
-              .catch((err) => {
-                console.log(err);
-                res.status(500).json({
-                  error: err,
-                });
+router.post("/signup", upload.single("image"), async (req, res, next) => {
+  try {
+    let img = defaultUserImageUrl;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "parking-app",
+      });
+      img = result.secure_url;
+    }
+    User.find({ email: req.body.email })
+      .exec()
+      .then((user) => {
+        if (user.length >= 1) {
+          return res.status(409).json({
+            message: "Mail exists",
+          });
+        } else {
+          bcrypt.hash(req.body.password, 10, (err, hash) => {
+            if (err) {
+              return res.status(500).json({
+                error: err,
               });
-          }
-        });
-      }
+            } else {
+              const { email, firstName, lastName, phone } = req.body;
+              const user = new User({
+                _id: new mongoose.Types.ObjectId(),
+                email,
+                password: hash,
+                firstName,
+                lastName,
+                phone,
+                image: img,
+              });
+              user
+                .save()
+                .then((result) => {
+                  console.log(result);
+                  res.status(200).json({
+                    message: "User created",
+                  });
+                })
+                .catch((err) => {
+                  console.log(err);
+                  res.status(500).json({
+                    error: err,
+                  });
+                });
+            }
+          });
+        }
+      });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "error saving image",
+      error: err,
     });
+  }
 });
 
+//login
 router.post("/login", (req, res, next) => {
   User.find({ email: req.body.email })
     .exec()
@@ -67,7 +92,7 @@ router.post("/login", (req, res, next) => {
               email: user[0].email,
               userId: user[0]._id,
             },
-            "process.env.JWT_KEY", //fix it later
+            process.env.JWT_KEY,
             {
               expiresIn: "1h",
             }
@@ -90,5 +115,10 @@ router.post("/login", (req, res, next) => {
       });
     });
 });
+
+//TODO: Add the following routes:
+// -signin automatically after signup
+// -update user
+// -logout
 
 module.exports = router;

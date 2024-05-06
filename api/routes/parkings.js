@@ -1,20 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const multer = require("multer");
-
-const cloudinary = require("cloudinary").v2;
-//const upload = multer({ dest: "uploads/" });
-
-cloudinary.config({
-  cloud_name: "dplvqzogl",
-  api_key: "961273486951599",
-  api_secret: "E-rVAmYOw4QHol9ig-y3JAotQTw",
-});
-
-// const upload = multer({ storage: storage });
 const Parking = require("../models/parking");
+const upload = require("../middleware/multer");
+const cloudinary = require("../utils/cloudinary");
+const defaultParkingImageUrl =
+  "https://res.cloudinary.com/dplvqzogl/image/upload/v1715002629/parking-app/duhp6ay0nxztbzlqqfm9.jpg";
 
+//get all parkings
 router.get("/", (req, res, next) => {
   Parking.find()
     // .select("name price capacity image description longitude latitude city")
@@ -52,53 +45,56 @@ router.get("/", (req, res, next) => {
     });
 });
 
-router.post("/", (req, res, next) => {
-  console.log(req.file);
-  //   const img =
-  //  ` await cloudinary.uploader.upload("./uploads/" , {
-  //     folder: "parking-app",
-  //   });`
-  const {
-    name,
-    price,
-    capacity,
-    reserved,
-    image,
-    city,
-    latitude,
-    longitude,
-    description,
-  } = req.body;
+//create a parking
+router.post("/", upload.single("image"), async (req, res, next) => {
+  try {
+    let img = defaultParkingImageUrl;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "parking-app",
+      });
+      img = result.secure_url;
+    }
 
-  const parking = new Parking({
-    _id: new mongoose.Types.ObjectId(),
-    name,
-    price,
-    capacity,
-    reserved,
-    image,
-    city,
-    latitude,
-    longitude,
-    description,
-  });
-  parking
-    .save()
-    .then((result) => {
-      console.log(result);
-      res.status(200).json({
-        message: "Handling POST requests to /parkings",
-        createdParking: parking,
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
+    const {
+      name,
+      price,
+      capacity,
+      reserved,
+      city,
+      latitude,
+      longitude,
+      description,
+    } = req.body;
+
+    const parking = new Parking({
+      _id: new mongoose.Types.ObjectId(),
+      name,
+      price,
+      capacity,
+      reserved,
+      image: img,
+      city,
+      latitude,
+      longitude,
+      description,
     });
+
+    const savedParking = await parking.save();
+
+    res.status(200).json({
+      message: "Parking created successfully",
+      createdParking: savedParking,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "An error occurred while creating parking",
+    });
+  }
 });
 
+//get parking by id
 router.get("/:parkingId", (req, res, next) => {
   const id = req.params.parkingId;
   Parking.findById(id)
@@ -119,23 +115,4 @@ router.get("/:parkingId", (req, res, next) => {
     });
 });
 
-router.patch("/:parkingId", (req, res, next) => {
-  const id = req.params.parkingId;
-  const updateOps = {};
-  for (const ops of req.body) {
-    updateOps[ops.propName] = ops.value;
-  }
-  Parking.updateOne({ _id: id }, { $set: updateOps })
-    .exec()
-    .then((result) => {
-      console.log(result);
-      res.status(200).json(result);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
-    });
-});
 module.exports = router;
