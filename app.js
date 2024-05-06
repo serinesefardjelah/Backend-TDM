@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const parkingRoutes = require("./api/routes/parkings");
 const reservationRoutes = require("./api/routes/reservations");
 const userRoutes = require("./api/routes/users");
+require("dotenv").config();
 
 mongoose.connect(
   "mongodb+srv://seriiinna:" +

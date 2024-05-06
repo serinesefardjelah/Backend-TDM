@@ -6,6 +6,8 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const upload = require("../middleware/multer");
 const cloudinary = require("../utils/cloudinary");
+
+require('dotenv').config();
 const defaultUserImageUrl =
   "https://res.cloudinary.com/dplvqzogl/image/upload/v1715002629/parking-app/duhp6ay0nxztbzlqqfm9.jpg";
 
