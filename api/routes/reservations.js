@@ -46,6 +46,7 @@ router.post("/", checkAuth, async (req, res, next) => {
       place: parking.availablePlaces,
       userId: userId,
     });
+    console.log(reservation);
 
     parking.availablePlaces--;
     await parking.save();
