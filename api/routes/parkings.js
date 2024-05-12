@@ -10,11 +10,14 @@ const defaultParkingImageUrl =
 //get all parkings
 router.get("/", (req, res, next) => {
   Parking.find()
-    // .select("name price capacity image description longitude latitude city")
     .exec()
     .then((docs) => {
-      docs.map((doc) => {
-        return {
+      const resultArray = []; // Declare an array to store result objects
+
+      docs.forEach((doc) => {
+        // Use forEach instead of map since we don't need to return anything
+        const result = {
+          id: doc._id,
           name: doc.name,
           price: doc.price,
           capacity: doc.capacity,
@@ -23,12 +26,12 @@ router.get("/", (req, res, next) => {
           longitude: doc.longitude,
           latitude: doc.latitude,
           city: doc.city,
-
-          _id: doc._id,
         };
-      }),
-        console.log(docs);
-      res.status(200).json(docs);
+        resultArray.push(result); // Push each result object into the array
+      });
+
+      console.log(docs);
+      res.status(200).json(resultArray); // Return the array as JSON response
     })
     .catch((err) => {
       console.log(err);
