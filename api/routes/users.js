@@ -7,7 +7,7 @@ const User = require("../models/user");
 const upload = require("../middleware/multer");
 const cloudinary = require("../utils/cloudinary");
 
-require('dotenv').config();
+require("dotenv").config();
 const defaultUserImageUrl =
   "https://res.cloudinary.com/dplvqzogl/image/upload/v1715002629/parking-app/duhp6ay0nxztbzlqqfm9.jpg";
 
@@ -119,8 +119,8 @@ router.post("/login", (req, res, next) => {
 });
 
 //TODO: Add the following routes:
-// -signin automatically after signup
-// -update user
-// -logout
+
+// update user
+// get user info
 
 module.exports = router;

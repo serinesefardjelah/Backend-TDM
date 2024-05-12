@@ -54,10 +54,7 @@ router.post("/", checkAuth, async (req, res, next) => {
     // Save the reservation
     const savedReservation = await reservation.save();
 
-    res.status(200).json({
-      message: "Reservation stored",
-      createdReservation: savedReservation,
-    });
+    res.status(200).json(savedReservation);
   } catch (error) {
     console.error(error);
     res
