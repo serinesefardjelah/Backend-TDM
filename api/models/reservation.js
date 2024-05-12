@@ -12,9 +12,11 @@ const reservationSchema = mongoose.Schema({
     ref: "User",
     required: true,
   },
-  entryTime: { type: Date, required: true },
-  exitTime: { type: Date, required: true },
   place: { type: Number },
+
+  //make them required after testing
+  entryTime: { type: Date, default: Date.now },
+  exitTime: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("Reservation", reservationSchema);
