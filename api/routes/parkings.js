@@ -26,6 +26,7 @@ router.get("/", (req, res, next) => {
           longitude: doc.longitude,
           latitude: doc.latitude,
           city: doc.city,
+          availablePlaces: doc.availablePlaces,
         };
         resultArray.push(result); // Push each result object into the array
       });
