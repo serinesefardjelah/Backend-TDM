@@ -13,29 +13,22 @@ router.get("/", (req, res, next) => {
     // .select("name price capacity image description longitude latitude city")
     .exec()
     .then((docs) => {
-      const response = {
-        count: docs.length,
-        parkings: docs.map((doc) => {
-          return {
-            name: doc.name,
-            price: doc.price,
-            capacity: doc.capacity,
-            image: doc.image,
-            description: doc.description,
-            longitude: doc.longitude,
-            latitude: doc.latitude,
-            city: doc.city,
+      docs.map((doc) => {
+        return {
+          name: doc.name,
+          price: doc.price,
+          capacity: doc.capacity,
+          image: doc.image,
+          description: doc.description,
+          longitude: doc.longitude,
+          latitude: doc.latitude,
+          city: doc.city,
 
-            _id: doc._id,
-            request: {
-              type: "GET",
-              url: "http://localhost:3000/parkings/" + doc._id,
-            },
-          };
-        }),
-      };
-      console.log(docs);
-      res.status(200).json(response);
+          _id: doc._id,
+        };
+      }),
+        console.log(docs);
+      res.status(200).json(docs);
     })
     .catch((err) => {
       console.log(err);
