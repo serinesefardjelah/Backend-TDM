@@ -46,6 +46,14 @@ router.post("/", checkAuth, async (req, res, next) => {
       place: parking.availablePlaces,
       userId: userId,
     });
+    const reservation_returned = {
+      id: reservation._id,
+      entryTime: reservation.entryTime,
+      exitTime: reservation.exitTime,
+      place: reservation.place,
+      parkingId: reservation.parkingId,
+      userId: reservation.userId,
+    };
     console.log(reservation);
 
     parking.availablePlaces--;
@@ -54,7 +62,8 @@ router.post("/", checkAuth, async (req, res, next) => {
     // Save the reservation
     const savedReservation = await reservation.save();
 
-    res.status(200).json(savedReservation);
+    //res.status(200).json(savedReservation);
+    res.status(200).json(reservation_returned);
   } catch (error) {
     console.error(error);
     res
