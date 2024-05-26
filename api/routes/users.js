@@ -118,9 +118,32 @@ router.post("/login", (req, res, next) => {
     });
 });
 
+router.post("/me", (req, res, next) => {
+  const token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, process.env.JWT_KEY);
+
+  User.findById(decoded.userId)
+    .select("-password") // Exclude the password field
+    .exec()
+    .then((user) => {
+      if (user) {
+        res.status(200).json(user);
+      } else {
+        res.status(404).json({
+          message: "User not found",
+        });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
+
 //TODO: Add the following routes:
 
 // update user
-// get user info
 
 module.exports = router;
