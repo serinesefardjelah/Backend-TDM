@@ -74,6 +74,8 @@ router.post("/signup", upload.single("image"), async (req, res, next) => {
 
 //login
 router.post("/login", (req, res, next) => {
+  const { email, password, fcmToken } = req.body; // Extract fcmToken along with email and password
+
   User.find({ email: req.body.email })
     .exec()
     .then((user) => {
@@ -99,15 +101,27 @@ router.post("/login", (req, res, next) => {
               expiresIn: "1h",
             }
           );
-
-          return res.status(200).json({
-            message: "Auth successful",
-            token: token,
+          user[0].fcmToken = fcmToken;
+          user[0]
+            .save()
+            .then(() => {
+              return res.status(200).json({
+                message: "Auth successfulllllll",
+                token: token,
+                fcmtoken: fcmToken,
+                
+              });
+            })
+            .catch((err) => {
+              return res.status(500).json({
+                error: err,
+              });
+            });
+        } else {
+          res.status(401).json({
+            message: "Auth failed",
           });
         }
-        res.status(401).json({
-          message: "Auth failed",
-        });
       });
     })
     .catch((err) => {
