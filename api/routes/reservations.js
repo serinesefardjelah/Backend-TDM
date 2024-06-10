@@ -117,7 +117,6 @@ router.get("/:userId", checkAuth, (req, res, next) => {
 });
 
 //TODO:
-// - update reservation (needed for status maybe)
 // - generate QR code for reservationId
 
 module.exports = router;

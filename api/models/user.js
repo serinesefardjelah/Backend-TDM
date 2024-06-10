@@ -14,6 +14,7 @@ const userSchema = mongoose.Schema({
   lastName: { type: String, required: true },
   phone: { type: String },
   image: { type: String },
+  fcmToken: { type: String, default: "" },
 });
 
 module.exports = mongoose.model("User", userSchema);
