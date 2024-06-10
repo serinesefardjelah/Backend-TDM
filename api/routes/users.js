@@ -146,7 +146,7 @@ router.post("/google-auth", async (req, res) => {
         password: "google-auth",
         firstName,
         lastName,
-        phone: "055555555",
+        phone: "",
         image,
       });
 
@@ -181,12 +181,12 @@ router.post("/me", (req, res, next) => {
   const decoded = jwt.verify(token, process.env.JWT_KEY);
 
   User.findById(decoded.userId)
-    .select("-password -fcmToken") // Exclude the password field
+    .select("-password -fcmToken")
     .exec()
     .then((user) => {
       if (user) {
         if (!user.phone) {
-          user.phone = "055555555";
+          user.phone = "";
           user.save();
         }
         if (!user.image) {
