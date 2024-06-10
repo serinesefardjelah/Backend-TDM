@@ -118,6 +118,50 @@ router.post("/login", (req, res, next) => {
     });
 });
 
+router.post("/google-auth", async (req, res) => {
+  const { email, firstName, lastName, image } = req.body;
+
+  try {
+    let user = await User.findOne({ email }).exec();
+    let isNewUser = false;
+
+    if (!user) {
+      isNewUser = true;
+      user = new User({
+        _id: new mongoose.Types.ObjectId(),
+        email,
+        password: "google-auth",
+        firstName,
+        lastName,
+        image,
+      });
+
+      await user.save();
+    }
+
+    const token = jwt.sign(
+      {
+        email: user.email,
+        userId: user._id,
+      },
+      process.env.JWT_KEY,
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    res.status(200).json({
+      message: isNewUser
+        ? "New user created and authenticated with Google"
+        : "Existing user authenticated with Google",
+      token,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.post("/me", (req, res, next) => {
   const token = req.headers.authorization.split(" ")[1];
   const decoded = jwt.verify(token, process.env.JWT_KEY);
