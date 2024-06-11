@@ -22,7 +22,8 @@ const executeTask = async () => {
 
     // Find reservations starting within the next hour
     const reservations = await Reservation.find({
-      entryTime: oneHourFromNow,
+      entryTime: { $gte: currentTime, $lte: oneHourFromNow },
+      is_notified: { $ne: true }, 
     }).populate("userId");
 
     if (reservations.length) {
