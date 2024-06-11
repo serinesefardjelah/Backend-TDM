@@ -15,7 +15,10 @@ const executeTask = async () => {
     const oneHourFromNow = new Date(currentTime.getTime() + 60 * 60 * 1000);
     console.log(
       "Current time:",
-      currentTime,
+      currentTime.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
       "One hour from now:",
       oneHourFromNow
     );
@@ -23,7 +26,7 @@ const executeTask = async () => {
     // Find reservations starting within the next hour
     const reservations = await Reservation.find({
       entryTime: { $gte: currentTime, $lte: oneHourFromNow },
-      is_notified: { $ne: true }, 
+      is_notified: { $ne: true },
     }).populate("userId");
 
     if (reservations.length) {
@@ -51,7 +54,12 @@ const notify = async (reservation) => {
         const message = {
           notification: {
             title: "Parking Reservation is soon",
-            body: "Your reservation is starting at " + reservation.entryTime.getTime(),
+            body:
+              "Your reservation is starting at " +
+              reservation.entryTime.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
           },
           token: token,
         };
