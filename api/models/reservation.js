@@ -17,6 +17,7 @@ const reservationSchema = mongoose.Schema({
   //make them required after testing
   entryTime: { type: Date, default: Date.now },
   exitTime: { type: Date, default: Date.now },
+  is_notified: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model("Reservation", reservationSchema);
