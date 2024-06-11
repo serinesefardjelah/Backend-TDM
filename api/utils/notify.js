@@ -50,8 +50,8 @@ const notify = async (reservation) => {
         const token = tokenDoc.token;
         const message = {
           notification: {
-            title: "Reservation",
-            body: "Your reservation is starting soon",
+            title: "Parking Reservation is soon",
+            body: "Your reservation is starting at " + reservation.entryTime.getTime(),
           },
           token: token,
         };
@@ -60,7 +60,6 @@ const notify = async (reservation) => {
           const response = await admin.messaging().send(message);
           console.log("Notification sent successfully:", response);
 
-          // Update the reservation to indicate that the notification was sent
           await Reservation.findByIdAndUpdate(reservation._id, {
             is_notified: true,
           });
