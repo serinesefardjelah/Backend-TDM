@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const FirebaseToken = require("../models/token"); // Ensure this is required
 const upload = require("../middleware/multer");
 const cloudinary = require("../utils/cloudinary");
 
@@ -84,44 +85,49 @@ router.post("/login", (req, res, next) => {
           message: "Auth failed",
         });
       }
-      bcrypt.compare(req.body.password, user[0].password, (err, result) => {
-        if (err) {
-          return res.status(401).json({
-            message: "Auth failed",
-          });
-        }
-        if (result) {
-          const token = jwt.sign(
-            {
-              email: user[0].email,
-              userId: user[0]._id,
-            },
-            process.env.JWT_KEY,
-            {
-              expiresIn: "1h",
-            }
-          );
-          user[0].fcmToken = fcmToken;
-          user[0]
-            .save()
-            .then(() => {
-              return res.status(200).json({
-                message: "Auth successfulllllll",
-                token: token,
-                fcmtoken: fcmToken,
-              });
-            })
-            .catch((err) => {
-              return res.status(500).json({
-                error: err,
-              });
+      bcrypt.compare(
+        req.body.password,
+        user[0].password,
+        async (err, result) => {
+          if (err) {
+            return res.status(401).json({
+              message: "Auth failed",
             });
-        } else {
-          res.status(401).json({
-            message: "Auth failed",
-          });
+          }
+          if (result) {
+            const token = jwt.sign(
+              {
+                email: user[0].email,
+                userId: user[0]._id,
+              },
+              process.env.JWT_KEY,
+              {
+                expiresIn: "1h",
+              }
+            );
+            // Save the FCM token
+            try {
+              const newToken = new FirebaseToken({
+                userId: user[0]._id,
+                token: fcmToken,
+              });
+              await newToken.save();
+            } catch (err) {
+              console.error("Error saving FCM token:", err);
+            }
+
+            return res.status(200).json({
+              message: "Auth successful",
+              token: token,
+              fcmToken: fcmToken,
+            });
+          } else {
+            res.status(401).json({
+              message: "Auth failed",
+            });
+          }
         }
-      });
+      );
     })
     .catch((err) => {
       console.log(err);
