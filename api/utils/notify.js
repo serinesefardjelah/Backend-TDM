@@ -1,11 +1,8 @@
-
 const Reservation = require("../models/reservation");
 const FirebaseToken = require("../models/token");
 // Firebase Configuration
 var admin = require("firebase-admin");
 var serviceAccount = require("./serviceAccountKey.json");
-
-
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -16,10 +13,16 @@ const executeTask = async () => {
     console.log("Start executing the task");
     const currentTime = new Date();
     const oneHourFromNow = new Date(currentTime.getTime() + 60 * 60 * 1000);
+    console.log(
+      "Current time:",
+      currentTime,
+      "One hour from now:",
+      oneHourFromNow
+    );
 
     // Find reservations starting within the next hour
     const reservations = await Reservation.find({
-      entryTime: { $gte: currentTime, $lte: oneHourFromNow },
+      entryTime: oneHourFromNow,
     }).populate("userId");
 
     if (reservations.length) {
@@ -78,4 +81,3 @@ const interval = 10 * 1000; // 10 seconds for testing
 setInterval(executeTask, interval);
 
 module.exports = executeTask;
-
