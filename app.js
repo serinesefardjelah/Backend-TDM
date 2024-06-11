@@ -7,6 +7,8 @@ const mongoose = require("mongoose");
 const parkingRoutes = require("./api/routes/parkings");
 const reservationRoutes = require("./api/routes/reservations");
 const userRoutes = require("./api/routes/users");
+const executeTask = require("./api/utils/notify");
+// const { default: executeTask } = require("./api/utils/notify");
 require("dotenv").config();
 
 mongoose.connect(
@@ -31,7 +33,7 @@ app.use((req, res, next) => {
     res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
     return res.status(200).json({});
   }
-  next(); // continue to the next middleware, block the incoming request
+  next(); 
 });
 
 app.use("/parkings", parkingRoutes);
@@ -52,5 +54,11 @@ app.use((error, req, res, next) => {
     },
   });
 });
+
+try {
+  executeTask();
+} catch (error) {
+  console.error("Error calling executeTask:", error);
+}
 
 module.exports = app;
